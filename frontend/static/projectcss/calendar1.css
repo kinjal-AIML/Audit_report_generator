@@ -1,0 +1,197 @@
+/* Make the card fill the fixed height */
+.card {
+             /* fixed height */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make card-body fill the card */
+.card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;            /* critical for flex children overflow */
+  overflow: hidden;
+}
+
+/* The main flex container with sidebar and calendar */
+.d-flex {
+  flex: 1 1 auto;
+  min-height: 0;            /* important for scrolling inside */
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Employee sidebar should fill height */
+
+/* Make the employee list container scrollable */
+#employeeListContainer {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Calendar container */
+.flex-grow-1.p-3.d-flex.flex-column {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Calendar itself fills container and scrolls vertically */
+#calendar {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+
+
+
+
+/* FullCalendar buttons */
+.fc-button {
+  background-color: #000c66;
+  border: 1px solid #000c66;
+  color: white;
+  border-radius: 0.5rem; /* rounded buttons */
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.fc-button:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Sunday cells highlight */
+.fc-day-sun {
+  background-color: #f2e9d0 !important;
+  color: black !important;
+}
+
+
+/* Make date numbers black and remove underline */
+.fc-daygrid-day-number {
+  color: black !important;       /* Force black date numbers */
+  text-decoration: none !important; /* Remove any underline */
+  font-weight: 500;              /* Optional: medium weight */
+}
+
+
+/* Day headers like Sun, Mon, etc. */
+.fc .fc-col-header-cell-cushion {
+  color: black !important;
+  text-decoration: none !important;
+  font-weight: bold; /* Optional */
+  font-size: 14px;   /* Optional */
+}
+
+
+/* Increase event text size */
+.fc .fc-event {
+  font-size: 16px !important;  /* Adjust the size as needed */
+  font-weight: 500;            /* Optional: make it bolder */
+}
+
+/* Add spacing between multiple events on the same day */
+.fc .fc-daygrid-event {
+  margin-bottom: 2px; /* Adjust spacing as needed */
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+
+
+/* Employee Sidebar */
+.employee-sidebar {
+  width: 15% !important;
+  min-width: 250px;  /* ensure sidebar doesn’t shrink too small */
+  max-width: 20%;    /* optional max width */
+  flex-shrink: 0;    /* prevent shrinking */
+  border-radius: 12px 0 0 12px; /* rounded left edges */
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: inset 1px 0 0 #ddd;
+}
+
+/* Employee List Container */
+#employeeListContainer {
+  max-height: 700px;
+  overflow-y: auto;
+  border-radius: 0 0 12px 12px; /* round bottom edges */
+}
+
+/* Employee List */
+#employeeList {
+  height: 100%;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual employee items */
+#employeeList .list-group-item {
+  cursor: pointer;
+  user-select: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-bottom: 4px;
+  padding: 10px 15px;
+  border: none;
+}
+
+/* Selected employee item */
+#employeeList .list-group-item.selected {
+  background-color: #004085;
+  color: white;
+  box-shadow: 0 0 8px rgba(0, 64, 133, 0.5);
+}
+
+/* Hover effect only for non-selected items */
+#employeeList .list-group-item:not(.selected):hover {
+  background-color: #cce0ff;
+  color: #004085;
+}
+
+/* Inputs and other controls styling */
+#employeeSearch {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s ease;
+}
+
+#employeeSearch:focus {
+  border-color: #004085;
+  box-shadow: 0 0 5px rgba(0, 64, 133, 0.5);
+  outline: none;
+}
+
+
+#employeeList .selected {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#employeeList li.list-group-item {
+  cursor: pointer;
+}
+
+
+#category {
+  font-size: 20px;  /* adjust size as you like */
+}
+
+
+

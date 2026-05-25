@@ -1,0 +1,135 @@
+#employeeList .list-group-item {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#employeeList .list-group-item:hover {
+  background-color: #e7f1ff;
+  color: #004085;
+}
+
+#employeeList .list-group-item.selected {
+  background-color: #0056b3;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+}
+
+
+
+#gridContainer {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 columns (Sr no + 5 others) */
+  gap: 4px;
+  /* Fill remaining height of calendar area and scroll */
+  height: 100%;
+  overflow-y: auto;
+}
+
+
+
+
+
+
+.grid-cell {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  user-select: none;
+}
+
+/* Make all grid cells normal font weight by default */
+.grid-cell {
+  font-weight: normal;
+}
+
+/* Bold only header cells */
+.header-cell {
+  font-weight: bold;
+}
+
+/* Bold only the Date column cells */
+.date-cell {
+  font-weight: bold;
+}
+
+
+
+.planning-cell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.planning-cell {
+  text-align: left !important; /* Override the inherited center align */
+  font-weight: bold;
+}
+
+.day-name {
+  min-width: 40px; /* or 50px for more clarity */
+  padding-right: 6px;
+}
+
+
+.event-text {
+  flex-grow: 1;
+  text-align: right;
+  color: #444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+.grid-cell {
+  font-size: 1rem; /* Previously 0.9rem */
+}
+
+.planning-cell {
+  font-size: 0.95rem; /* Previously 12px (~0.75rem) */
+}
+
+.day-name {
+  font-size: 1rem;
+}
+
+.event-text {
+  font-size: 0.95rem;
+}
+
+.sunday-cell {
+  background-color: #F1948A  !important;
+
+}
+
+
+.holiday-cell {
+  background-color: #f44336; /* bright red */
+
+}
+
+.leave-cell {
+  background-color: #ff9800; /* orange */
+
+}
+
+
+.row-highlight {
+  background-color: #a8cbe9; 
+  transition: background-color 0.3s;
+}
+

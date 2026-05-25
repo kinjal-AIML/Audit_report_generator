@@ -1,0 +1,197 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Jost', sans-serif;
+  background-color: #fff; /* solid black */
+}
+
+.container {
+  display: flex;
+  width: 900px;
+  height: 600px;
+  box-shadow: 0 0 30px rgba(255,255,255,0.6); /* white glow */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff; /* container background white */
+}
+
+.left-side {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.left-side img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* no grayscale filter here */
+}
+
+/* Right side form container */
+.right-side {
+  flex: 1;
+  background-color: #000; /* solid black */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Main form wrapper */
+.main {
+  width: 350px;
+  height: 450px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+#chk {
+  display: none;
+}
+
+.signup {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  color: #fff;  /* white text */
+  max-height: 450px;
+  padding-right: 10px;
+}
+
+label {
+  color: #fff;
+  font-size: 2.3em;
+  justify-content: center;
+  display: flex;
+  margin: 50px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: .5s ease-in-out;
+}
+
+.title {
+  font-size: 1.4em;
+  text-align: center;
+  color: #fff;
+  font-weight: 600;
+  margin: 0px;
+}
+
+input {
+  width: 70%;
+  height: auto;
+  background: #f0f0f0; /* light gray */
+  justify-content: center;
+  display: flex;
+  margin: 12px auto;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  color: #000; /* black text inside input */
+  font-weight: 600;
+}
+
+button {
+  width: 70%;
+  height: 36px;
+  margin: 10px auto;
+  justify-content: center;
+  display: block;
+  color: #fff; /* black text */
+  background: #070b41; /* white background */
+  font-size: 1em;
+  font-weight: bold;
+  margin-top: 20px;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  transition: .2s ease-in;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ddd; /* light gray on hover */
+}
+
+.login {
+  height: 460px;
+  background: #f0f0f0; /* light gray */
+  border-radius: 60% / 10%;
+  transform: translateY(-180px);
+  transition: .8s ease-in-out;
+  color: #000; /* black text */
+}
+
+.login label {
+  color: #000;
+  transform: scale(.6);
+}
+
+/* Toggle effect */
+#chk:checked ~ .login {
+  transform: translateY(-500px);
+}
+
+#chk:checked ~ .login label {
+  transform: scale(1);
+}
+
+.signup label {
+  margin: 30px 50px;
+}
+
+#chk:checked ~ .signup label {
+  transform: scale(.6);
+}
+
+.developed-by {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666; /* medium gray */
+}
+
+.developed-by .dev-logo {
+  height: 50px;
+  vertical-align: middle;
+  margin-left: 8px;
+  /* no grayscale filter here */
+}
+
+/* Title for Utility Bill Tracker */
+.tracker-title {
+  text-align: center;
+  color: #fff;
+  font-size: 1.8em;
+  margin: 10px 0 20px 0;
+  font-weight: 700;
+}
+
+/* Logos container under left image */
+.left-side .logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  background: rgba(255,255,255,0.15); /* light overlay */
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}
+
+.left-side .logos .logo {
+  max-height: 50px;
+  max-width: 100px;
+  object-fit: contain;
+  /* no grayscale filter */
+}

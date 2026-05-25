@@ -1,0 +1,76 @@
+/* Compact Dashboard Layout */
+
+.widgets-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+}
+
+.widgets-summary .widget {
+  flex: 1 1 140px;
+  max-width: 160px;
+  min-width: 120px;
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.widgets-summary .widget h5 {
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.widgets-summary .widget .h4 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Card spacing reduced */
+.card {
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  padding: 0.5rem 1rem;
+}
+
+.card-header h5 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.card-body {
+  padding: 0.75rem 1rem;
+}
+
+/* Chart canvas height compact */
+canvas {
+  max-height: 220px !important;
+}
+
+/* List items spacing */
+.list-group-item {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Chart & list cards in grid */
+.row > .card,
+.lists .card {
+  padding: 0;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .widgets-summary .widget {
+    flex: 1 1 45%;
+    max-width: 48%;
+  }
+  canvas {
+    max-height: 180px !important;
+  }
+}

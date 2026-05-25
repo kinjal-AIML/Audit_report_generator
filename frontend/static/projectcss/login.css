@@ -1,0 +1,166 @@
+body {
+  background-color: #6b46c1; /* White background */
+  font-family: 'Inter', system-ui, sans-serif;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #1f2937;
+}
+
+.login-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  max-width: 420px;
+  width: 100%;
+  padding: 3rem 2.5rem 3.5rem;
+  color: #1f2937;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-header h1 {
+  font-weight: 700;
+  font-size: 2.25rem;
+  margin: 0;
+  color: #4f46e5;
+}
+
+.login-header p {
+  font-weight: 500;
+  margin-top: 0.5rem;
+  color: #6b7280;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #374151;
+  display: block;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="password"] {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border: 1.8px solid #d1d5db;
+  border-radius: 10px;
+  transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #4f46e5;
+  outline: none;
+  background-color: #f9fafb;
+}
+
+.btn-primary {
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background-color: #4338ca;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-top: 1rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: #4f46e5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Error message style */
+.error-message {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+
+
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 40px; /* Make space for the icon */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #aaa;
+}
+
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-container {
+    margin: 1rem;
+    padding: 2rem 1.5rem 2.5rem;
+  }
+}

@@ -1,0 +1,238 @@
+/* Container fills fixed height */
+.card {
+  
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+/* card-body fills card */
+.card-body {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Main flex container for sidebar + calendar */
+.d-flex {
+  flex: 1 1 auto;
+  display: flex;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Sidebar styles */
+.employee-sidebar {
+  width: 15% !important;
+  min-width: 250px;  /* ensure sidebar doesn’t shrink too small */
+  max-width: 20%;    /* optional max width */
+  flex-shrink: 0;    /* prevent shrinking */
+  border-radius: 12px 0 0 12px; /* rounded left edges */
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: inset 1px 0 0 #ddd;
+}
+
+/* Search input */
+#employeeSearch {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* Employee list container scroll */
+#employeeListContainer {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Employee list items */
+#employeeList .list-group-item {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  margin-bottom: 0.3rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#employeeList .list-group-item:hover {
+  background-color: #e7f1ff;
+  color: #004085;
+}
+
+#employeeList .list-group-item.selected {
+  background-color: #0056b3;
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+}
+
+/* Calendar container */
+.flex-grow-1.p-3.d-flex.flex-column {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+/* Calendar header */
+h5.mb-3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem !important;
+  border-bottom: 2px solid #004085;
+  padding-bottom: 0.5rem;
+  color: #002966;
+}
+
+/* Controls container */
+.calendar-controls {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 64, 128, 0.15);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  min-width: 100px;
+  cursor: pointer;
+}
+
+
+.calendar-controls select.form-select:focus {
+  outline: none;
+  border-color: #0056b3;
+  box-shadow: 0 0 8px rgba(0, 86, 179, 0.5);
+  background-color: #e7f1ff;
+}
+
+/* Label styles for better spacing and readability */
+.calendar-controls label {
+  font-weight: 600;
+  color: #003366;
+}
+
+/* Optional: Add some horizontal spacing between label and select */
+.calendar-controls label + select.form-select {
+  margin-left: 0.5rem;
+  margin-right: 1.5rem;
+}
+
+/* Add horizontal spacing between FullCalendar header buttons */
+#calendar .fc-toolbar button.fc-button {
+  margin: 0 6px; /* 6px left & right margin */
+  text-transform: capitalize;
+}
+
+/* Remove margin on the very first and last button to keep container aligned */
+#calendar .fc-toolbar button.fc-button:first-child {
+  margin-left: 0;
+}
+#calendar .fc-toolbar button.fc-button:last-child {
+  margin-right: 0;
+}
+
+
+/* Calendar itself */
+#calendar {
+  flex: 1 1 auto;
+  
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* FullCalendar default button styles */
+.fc-button {
+  background-color: #002966 !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.85rem !important;
+  padding: 0.3rem 0.8rem !important;
+  color: white !important;
+  transition: background-color 0.3s ease;
+}
+
+.fc-button:hover {
+  background-color: #004085 !important;
+}
+
+/* Day headers */
+.fc .fc-col-header-cell-cushion {
+  color: #002966 !important;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Date numbers */
+.fc-daygrid-day-number {
+  color: #002966 !important;
+  font-weight: 600;
+  font-size: 0.9rem !important;
+}
+
+
+
+
+/* Events styling */
+.fc .fc-event {
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+  color: black !important;  /* change font color to black */
+}
+
+
+
+
+/* Sunday highlight */
+/* FullCalendar v5+ safe selector for Sunday cells in day grid */
+/* Highlight full day cell on Sunday */
+.fc-daygrid-day.fc-day-sun {
+  background-color: #f2e9d0 !important;
+}
+
+
+
+/* Scrollbar styles (optional, for nice scrollbars) */
+#employeeListContainer::-webkit-scrollbar,
+#calendar::-webkit-scrollbar {
+  width: 6px;
+}
+
+#employeeListContainer::-webkit-scrollbar-thumb,
+#calendar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+
+
+
+@media (max-width: 768px) {
+  .employee-sidebar {
+    width: 200px;
+  }
+  #calendar {
+    
+    width: 100%;
+  }
+}

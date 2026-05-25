@@ -1,0 +1,145 @@
+/* General Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f9;
+  color: #343a40;
+}
+
+/* Page Heading */
+h2 {
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* Nav Tabs */
+.nav-tabs .nav-link {
+  color: #495057;
+  border: 1px solid transparent;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  transition: background-color 0.3s;
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #dee2e6 #dee2e6 #fff;
+}
+
+/* Table Container */
+.table-wrapper {
+  margin-top: 20px;
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Tables */
+.table {
+  font-size: 14px;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table thead th {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin-bottom: 10px;
+  text-align: right;
+}
+
+.btn {
+  margin: 2px;
+}
+
+.btn-edit {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-save {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Editable Cells */
+.editable-cell {
+  cursor: pointer;
+  background-color: #fefefe;
+  transition: background-color 0.2s;
+}
+
+.editable-cell:hover {
+  background-color: #f1f1f1;
+  border-radius: 4px;
+}
+
+/* Static Cells */
+.static-cell {
+  background-color: #f8f9fa;
+  font-weight: 500;
+}
+
+/* Responsive Table */
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* Text alignment for buttons inside table cells */
+.table td button {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 14px;
+}
+
+/* Empty row style */
+.table tbody tr td.text-center {
+  color: #888;
+  font-style: italic;
+}
+
+
+
+.table-wrapper {
+  max-height: 75vh;         /* Limit the height */
+  overflow-y: auto;         /* Vertical scroll */
+  padding-right: 10px;      /* Prevent scrollbar overlap */
+}
+
+/* Optional: Style the scrollbar (for modern browsers) */
+.table-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}

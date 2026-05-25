@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %} Dashboard - Audit Report Generator {% endblock %}
+
+{% block content %}
+<div class="col-md-12">
+    <!-- Step 1: Upload -->
+    <div id="step-1" class="card card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Step 1: Upload Documents</h3>
+        </div>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="audit-file">Master Audit Template (CNSB/MNSB DOCX)</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="audit-file" name="audit_file" accept=".docx" required>
+                        <label class="custom-file-label" for="audit-file">Choose file</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="pdf-files">Supporting PDF Reports (Insurance, NPA, etc.)</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="pdf-files" name="pdf_files" accept=".pdf" multiple>
+                        <label class="custom-file-label" for="pdf-files">Select multiple PDFs</label>
+                    </div>
+                    <small class="form-text text-muted">Include files with names like 'insurance', 'npa', 'overdue' for auto-mapping.</small>
+                </div>
+                <div class="form-group">
+                    <label>Report Month Start Date:</label>
+                    <input type="date" class="form-control" name="start_date" value="2026-02-01" required>
+                </div>
+            </div>
+            <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
+                <div class="btn-group" role="group" aria-label="Quick Exports">
+                    <button id="quick-excel-docx" type="button" class="btn btn-success">DOCX → Excel</button>
+                    <button id="quick-excel-pdf" type="button" class="btn btn-info">PDFs → Excel</button>
+                </div>
+                <button type="submit" class="btn btn-primary">Next: Extract Data <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Step 2: Review Panel -->
+    <div id="step-2" class="card card-warning" style="display: none;">
+        <div class="card-header">
+            <h3 class="card-title">Step 2: Review & Edit Extracted Data</h3>
+        </div>
+        <div class="card-body">
+            <div id="docx-excel-link" class="mb-3" style="display:none;">
+                <div class="alert alert-info p-2 m-0">
+                    <i class="fas fa-file-excel"></i>
+                    <strong>DOCX → Excel:</strong>
+                    <a id="docx-excel-href" href="#" class="ml-2">Download</a>
+                </div>
+            </div>
+            <h5>Master Fields</h5>
+            <div id="master-fields-container" class="row mb-4">
+                <!-- Dynamic inputs for branch_name, etc. -->
+            </div>
+
+            <hr>
+            <h5>Extracted Tables</h5>
+            <ul class="nav nav-tabs" id="table-tabs" role="tablist">
+                <!-- Dynamic tabs for different PDFs -->
+            </ul>
+            <div class="tab-content pt-3" id="table-tabs-content">
+                <!-- Dynamic tables -->
+            </div>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <button id="download-excel-now" class="btn btn-success">Download Excel Now</button>
+            <button id="prev-step" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</button>
+            <button id="finalize-btn" class="btn btn-outline-success">Finalize & Generate Reports <i class="fas fa-check-double"></i></button>
+        </div>
+    </div>
+
+    <!-- Step 3: Success & Download -->
+    <div id="step-3" class="card card-success" style="display: none;">
+        <div class="card-header">
+            <h3 class="card-title">Step 3: Download Reports</h3>
+        </div>
+        <div class="card-body text-center">
+            <div class="alert alert-success mb-4">
+                <h5><i class="icon fas fa-check"></i> Success!</h5>
+                All reports have been standardized and generated.
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info"><i class="fas fa-file-word"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Audit Report</span>
+                            <a id="download-docx" href="#" class="btn btn-sm btn-outline-info">Download DOCX</a>
+                            <a id="download-pdf" href="#" class="btn btn-sm btn-outline-danger mt-1">Download PDF</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-success"><i class="fas fa-file-excel"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Master Excel</span>
+                            <a id="download-excel" href="#" class="btn btn-sm btn-outline-success">Download XLSX</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-warning"><i class="fas fa-book"></i></span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Annexure Workbook</span>
+                            <a id="download-annexure" href="#" class="btn btn-sm btn-outline-warning">Download XLSX</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="btn btn-default mt-4">Start New Audit</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .custom-file-label::after {
+        content: "Browse";
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let extractedData = {};
+
+$(document).ready(function () {
+    $('.custom-file-input').on('change', function() {
+        let fileName = $(this).val().split('\\').pop();
+        if ($(this).attr('multiple')) {
+            fileName = $(this)[0].files.length + " files selected";
+        }
+        $(this).next('.custom-file-label').addClass("selected").html(fileName);
+    });
+
+    // Step 1 -> Step 2
+    $('#upload-form').on('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const btn = $(this).find('button');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Extracting...');
+
+        $.ajax({
+            url: '/extract-data',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                extractedData = res.data;
+                renderReviewPanel(res.data, res.files || {});
+                $('#step-1').hide();
+                $('#step-2').show();
+            },
+            error: function (xhr) {
+                alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('Next: Extract Data <i class="fas fa-arrow-right"></i>');
+            }
+        });
+    });
+
+    // Quick DOCX-only export
+    $('#quick-excel-docx').on('click', function() {
+        const form = $('#upload-form')[0];
+        const formData = new FormData(form);
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> DOCX → Excel...');
+        $.ajax({
+            url: '/extract-excel-docx',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res){ if(res.file){ window.location = res.file; } },
+            error: function(xhr){ alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error')); },
+            complete: function(){ btn.prop('disabled', false).html('DOCX → Excel'); }
+        });
+    });
+
+    // Quick PDFs-only export
+    $('#quick-excel-pdf').on('click', function() {
+        const form = $('#upload-form')[0];
+        const formData = new FormData(form);
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> PDFs → Excel...');
+        $.ajax({
+            url: '/extract-excel-pdf',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(res){ if(res.file){ window.location = res.file; } },
+            error: function(xhr){ alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error')); },
+            complete: function(){ btn.prop('disabled', false).html('PDFs → Excel'); }
+        });
+    });
+
+    function renderReviewPanel(data, files) {
+        // Master Fields
+        const masterContainer = $('#master-fields-container');
+        masterContainer.empty();
+        Object.keys(data.master_data).forEach(key => {
+            const val = data.master_data[key];
+            masterContainer.append(`
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>${key}</label>
+                        <input type="text" class="form-control master-input" data-key="${key}" value="${val || ''}">
+                    </div>
+                </div>
+            `);
+        });
+
+        // DOCX Excel link if provided by backend
+        if (files && files.docx_excel) {
+            $('#docx-excel-href').attr('href', files.docx_excel);
+            $('#docx-excel-link').show();
+        } else {
+            $('#docx-excel-link').hide();
+        }
+
+        // Tables
+        const tabs = $('#table-tabs');
+        const content = $('#table-tabs-content');
+        tabs.empty();
+        content.empty();
+
+        Object.keys(data.tables).forEach((reportType, idx) => {
+            const records = data.tables[reportType];
+            if (records.length === 0) return;
+
+            const tabId = `tab-${reportType}`;
+            tabs.append(`
+                <li class="nav-item">
+                    <a class="nav-link ${idx === 0 ? 'active' : ''}" id="${tabId}-tab" data-toggle="pill" href="#${tabId}" role="tab">${reportType.toUpperCase()}</a>
+                </li>
+            `);
+
+            let tableHtml = `<div class="tab-pane fade ${idx === 0 ? 'show active' : ''}" id="${tabId}" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm data-table" data-report="${reportType}">
+                        <thead><tr>`;
+            
+            // Header
+            const columns = Object.keys(records[0]);
+            columns.forEach(col => tableHtml += `<th>${col}</th>`);
+            tableHtml += `</tr></thead><tbody>`;
+
+            // Body
+            records.forEach((row, rowIdx) => {
+                tableHtml += `<tr data-row="${rowIdx}">`;
+                columns.forEach(col => {
+                    const isEditable = col === 'Remarks' || col === 'Annexure Ref';
+                    tableHtml += `<td><input type="text" class="form-control form-control-sm table-input" 
+                        data-col="${col}" value="${row[col] || ''}" ${isEditable ? '' : ''}></td>`;
+                });
+                tableHtml += `</tr>`;
+            });
+
+            tableHtml += `</tbody></table></div></div>`;
+            content.append(tableHtml);
+        });
+    }
+
+    // Step 2 -> Step 3
+    $('#download-excel-now').on('click', function(){
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Exporting...');
+
+        const updatedTables = {};
+        $('.data-table').each(function() {
+            const reportType = $(this).data('report');
+            const rows = [];
+            $(this).find('tbody tr').each(function() {
+                const row = {};
+                $(this).find('.table-input').each(function() {
+                    row[$(this).data('col')] = $(this).val();
+                });
+                rows.push(row);
+            });
+            updatedTables[reportType] = rows;
+        });
+
+        $.ajax({
+            url: '/download-excel-now',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ table_data: updatedTables }),
+            success: function(res){ if(res.file){ window.location = res.file; } },
+            error: function(xhr){ alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error')); },
+            complete: function(){ btn.prop('disabled', false).html('Download Excel Now'); }
+        });
+    });
+    $('#finalize-btn').on('click', function() {
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating Reports...');
+
+        // Collect updated data
+        const updatedMaster = {};
+        $('.master-input').each(function() {
+            updatedMaster[$(this).data('key')] = $(this).val();
+        });
+
+        const updatedTables = {};
+        $('.data-table').each(function() {
+            const reportType = $(this).data('report');
+            const rows = [];
+            $(this).find('tbody tr').each(function() {
+                const row = {};
+                $(this).find('.table-input').each(function() {
+                    row[$(this).data('col')] = $(this).val();
+                });
+                rows.push(row);
+            });
+            updatedTables[reportType] = rows;
+        });
+
+        $.ajax({
+            url: '/finalize-report',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                master_data: updatedMaster,
+                table_data: updatedTables
+            }),
+            success: function(res) {
+                $('#download-docx').attr('href', res.files.docx);
+                $('#download-pdf').attr('href', res.files.pdf);
+                $('#download-excel').attr('href', res.files.excel);
+                $('#download-annexure').attr('href', res.files.annexure);
+                $('#step-2').hide();
+                $('#step-3').show();
+            },
+            error: function(xhr) {
+                alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('Finalize & Generate Reports <i class="fas fa-check-double"></i>');
+            }
+        });
+    });
+
+    $('#prev-step').on('click', function() {
+        $('#step-2').hide();
+        $('#step-1').show();
+    });
+});
+</script>
+{% endblock %}
