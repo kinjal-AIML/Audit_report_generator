@@ -27,6 +27,14 @@
                     <small class="form-text text-muted">Include files with names like 'insurance', 'npa', 'overdue' for auto-mapping.</small>
                 </div>
                 <div class="form-group">
+                    <label for="master-excel-file">Or Upload MASTER_AUDIT_DATA.xlsx (Optional)</label>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="master-excel-file" name="master_excel_file" accept=".xlsx">
+                        <label class="custom-file-label" for="master-excel-file">Choose Excel file</label>
+                    </div>
+                    <small class="form-text text-muted">Upload existing Master Excel to edit and add remarks/annexures.</small>
+                </div>
+                <div class="form-group">
                     <label>Report Month Start Date:</label>
                     <input type="date" class="form-control" name="start_date" value="2026-02-01" required>
                 </div>
@@ -36,6 +44,7 @@
                     <button id="quick-excel-docx" type="button" class="btn btn-success">DOCX → Excel</button>
                     <button id="quick-excel-pdf" type="button" class="btn btn-info">PDFs → Excel</button>
                 </div>
+                <button id="load-existing-excel-btn" type="button" class="btn btn-warning" style="display:none;"><i class="fas fa-folder-open"></i> Load Existing MASTER_AUDIT_DATA.xlsx</button>
                 <button type="submit" class="btn btn-primary">Next: Extract Data <i class="fas fa-arrow-right"></i></button>
             </div>
         </form>
@@ -125,6 +134,44 @@
 <style>
     .custom-file-label::after {
         content: "Browse";
+    }
+    .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    .data-table th {
+        background-color: #343a40;
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+    .data-table td {
+        vertical-align: middle;
+    }
+    .data-table .table-input {
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out;
+    }
+    .data-table .table-input:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    .data-table .editable-cell {
+        background-color: #fff3cd !important;
+    }
+    .data-table .editable-cell:focus {
+        background-color: #fff3cd !important;
+    }
+    .nav-tabs .nav-link {
+        font-weight: 500;
+    }
+    .nav-tabs .nav-link.active {
+        font-weight: 600;
+    }
+    .tab-pane {
+        padding-top: 15px;
     }
 </style>
 {% endblock %}
@@ -230,43 +277,93 @@ $(document).ready(function () {
             $('#docx-excel-link').hide();
         }
 
-        // Tables
+        // Tables - show all tables including Cash, NPA, Insurance, etc.
         const tabs = $('#table-tabs');
         const content = $('#table-tabs-content');
         tabs.empty();
         content.empty();
 
-        Object.keys(data.tables).forEach((reportType, idx) => {
+        // Collect all table types for tabs, always include known types
+        const tableTypes = Object.keys(data.tables);
+        
+        tableTypes.forEach((reportType, idx) => {
             const records = data.tables[reportType];
-            if (records.length === 0) return;
-
-            const tabId = `tab-${reportType}`;
+            const tabId = `tab-${reportType.replace(/\s+/g, '_')}`;
             tabs.append(`
                 <li class="nav-item">
                     <a class="nav-link ${idx === 0 ? 'active' : ''}" id="${tabId}-tab" data-toggle="pill" href="#${tabId}" role="tab">${reportType.toUpperCase()}</a>
                 </li>
             `);
 
+            // Ensure all records have Remarks and Annexure Ref columns
+            const allColumns = new Set();
+            records.forEach(row => {
+                Object.keys(row).forEach(col => allColumns.add(col));
+            });
+            
+            // Ensure Remarks and Annexure Ref are always present
+            allColumns.add('Remarks');
+            allColumns.add('Annexure Ref');
+            
+            // Convert to array and sort - put key columns first, then Remarks/Annexure at end
+            let columns = Array.from(allColumns);
+            
+            // Define preferred column order (key identifier columns come first)
+            const preferredOrder = [
+                'Branch Code', 'Branch Name', 'Loan Type Code', 'Loan Type Name', 
+                'A/c No.', 'Account No', 'Name', 'NPA Code', 'Category',
+                'Limit Amount (INR)', 'Sanctioned Amt (INR)', 'Outstanding (INR)', 
+                'Overdue Amt (INR)', 'Amount (INR)', 'Description', 'Section', 'Count',
+                'Op. Date', 'Due Date', 'Int. Rate (%)', 'Pending Inst.', 'Overdue Period',
+                'Adv. Recovery (INR)', 'Installment Amt (INR)', 'IR Balance (INR)', 
+                'Security Amt (INR)', 'Contact No.', 'Customer Id'
+            ];
+            
+            // Sort columns: preferred order first, then alphabetically, then Remarks/Annexure at end
+            const remarksAnnexure = ['Remarks', 'Annexure Ref'];
+            const otherColumns = columns.filter(c => !remarksAnnexure.includes(c));
+            
+            // Sort other columns by preferred order
+            otherColumns.sort((a, b) => {
+                const aIdx = preferredOrder.indexOf(a);
+                const bIdx = preferredOrder.indexOf(b);
+                if (aIdx >= 0 && bIdx >= 0) return aIdx - bIdx;
+                if (aIdx >= 0) return -1;
+                if (bIdx >= 0) return 1;
+                return a.localeCompare(b);
+            });
+            
+            // Final column order: sorted other columns + Remarks + Annexure Ref
+            columns = [...otherColumns, ...remarksAnnexure.filter(c => columns.includes(c))];
+
             let tableHtml = `<div class="tab-pane fade ${idx === 0 ? 'show active' : ''}" id="${tabId}" role="tabpanel">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-sm data-table" data-report="${reportType}">
-                        <thead><tr>`;
+                <div class="table-responsive" style="max-height: 500px; overflow: auto;">
+                    <table class="table table-bordered table-sm data-table" data-report="${reportType}" style="margin-bottom: 0;">
+                        <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
+                            <tr>`;
             
             // Header
-            const columns = Object.keys(records[0]);
-            columns.forEach(col => tableHtml += `<th>${col}</th>`);
+            columns.forEach(col => {
+                const isEditable = col === 'Remarks' || col === 'Annexure Ref';
+                tableHtml += `<th class="${isEditable ? 'bg-warning' : ''}" style="white-space: nowrap; min-width: 120px;">${col}</th>`;
+            });
             tableHtml += `</tr></thead><tbody>`;
 
             // Body
-            records.forEach((row, rowIdx) => {
-                tableHtml += `<tr data-row="${rowIdx}">`;
-                columns.forEach(col => {
-                    const isEditable = col === 'Remarks' || col === 'Annexure Ref';
-                    tableHtml += `<td><input type="text" class="form-control form-control-sm table-input" 
-                        data-col="${col}" value="${row[col] || ''}" ${isEditable ? '' : ''}></td>`;
+            if (records.length === 0) {
+                tableHtml += `<tr><td colspan="${columns.length}" class="text-center text-muted">No records found for ${reportType}</td></tr>`;
+            } else {
+                records.forEach((row, rowIdx) => {
+                    tableHtml += `<tr data-row="${rowIdx}">`;
+                    columns.forEach(col => {
+                        const isEditable = col === 'Remarks' || col === 'Annexure Ref';
+                        const cellValue = row[col] !== undefined && row[col] !== null ? row[col] : '';
+                        tableHtml += `<td class="${isEditable ? 'bg-light' : ''}" style="padding: 2px;"><input type="text" class="form-control form-control-sm table-input ${isEditable ? 'editable-cell' : ''}" 
+                            data-col="${col}" value="${cellValue}" ${isEditable ? '' : 'readonly'} style="width: 100%; min-width: 100px; ${isEditable ? 'font-weight: 500;' : ''}"></td>`;
+                    });
+                    tableHtml += `</tr>`;
                 });
-                tableHtml += `</tr>`;
-            });
+            }
 
             tableHtml += `</tbody></table></div></div>`;
             content.append(tableHtml);
@@ -354,6 +451,28 @@ $(document).ready(function () {
     $('#prev-step').on('click', function() {
         $('#step-2').hide();
         $('#step-1').show();
+    });
+
+    // Load existing MASTER_AUDIT_DATA.xlsx
+    $('#load-existing-excel-btn').on('click', function() {
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Loading...');
+        $.ajax({
+            url: '/load-existing-master-excel',
+            type: 'GET',
+            success: function(res) {
+                extractedData = { master_data: {}, tables: res.tables };
+                renderReviewPanel(extractedData, {});
+                $('#step-1').hide();
+                $('#step-2').show();
+            },
+            error: function(xhr) {
+                alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'No existing MASTER_AUDIT_DATA.xlsx found. Please upload files first.'));
+            },
+            complete: function() {
+                btn.prop('disabled', false).html('<i class="fas fa-folder-open"></i> Load Existing MASTER_AUDIT_DATA.xlsx');
+            }
+        });
     });
 });
 </script>

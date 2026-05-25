@@ -96,19 +96,6 @@ def extract_data_route():
 
         pdf_results = process_all_pdfs(UPLOAD_DIR, file_mappings)
         
-        # Handle Master Excel file upload if provided
-        master_excel_file = request.files.get('master_excel_file')
-        if master_excel_file and master_excel_file.filename.endswith('.xlsx'):
-            master_excel_path = os.path.join(UPLOAD_DIR, master_excel_file.filename)
-            master_excel_file.save(master_excel_path)
-            try:
-                master_excel_data = pd.read_excel(master_excel_path, sheet_name=None)
-                # Merge with pdf_results, preferring master_excel data for matching sheets
-                for sheet_name, df in master_excel_data.items():
-                    pdf_results[sheet_name] = df
-            except Exception as e:
-                print(f"Warning: Could not load Master Excel: {e}")
-        
         npa_df = pdf_results.get("NPA Accounts", pd.DataFrame())
         if not npa_df.empty:
             total_npa = len(npa_df)
@@ -238,7 +225,7 @@ def finalize_report_route():
     master_data = form_data.get('master_data')
     table_data = form_data.get('table_data') # Dictionary of lists
     template_name = session.get('template_name', 'UPDATED_CNSB_TEMPLATE.docx')
-    
+
     # 1. Generate Master Excel
     excel_data = {}
     for k, v in table_data.items():
@@ -246,27 +233,11 @@ def finalize_report_route():
     
     excel_path = generate_master_excel(excel_data, OUTPUT_DIR)
     annexure_path = generate_annexure_workbook(excel_data, OUTPUT_DIR)
+
+    # 2. Generate Final DOCX
+    # Update master_data with summaries if needed
+    # Example: master_data["npa_summary"] = "Summary of NPA..."
     
-    # 2. Build summaries from table data for template
-    # Generate annexure summaries with Remarks and Annexure Ref
-    annexure_summaries = []
-    for sheet_name, records in table_data.items():
-        for record in records:
-            remark = record.get('Remarks', '')
-            annexure_ref = record.get('Annexure Ref', '')
-            if remark or annexure_ref:
-                # Build a summary string for the template
-                summary = f"{sheet_name}: "
-                if remark:
-                    summary += remark
-                if annexure_ref:
-                    summary += f" [{annexure_ref}]"
-                annexure_summaries.append(summary)
-    
-    master_data['annexure_summaries'] = "\\n".join(annexure_summaries)
-    master_data['annexure_count'] = len(annexure_summaries)
-    
-    # 3. Generate Final DOCX
     try:
         output_docx = generate_report(
             template_name=template_name,
@@ -337,85 +308,5 @@ def generate_audit_report():
 def download_report(filename):
     return send_from_directory(OUTPUT_DIR, filename, as_attachment=True)
 
-@app.route('/load-master-excel', methods=['POST'])
-def load_master_excel_route():
-    """Load existing MASTER_AUDIT_DATA.xlsx for review and editing."""
-    try:
-        excel_file = request.files.get('excel_file')
-        if not excel_file:
-            return jsonify({"error": "No Excel file uploaded"}), 400
-        
-        excel_path = os.path.join(UPLOAD_DIR, excel_file.filename)
-        excel_file.save(excel_path)
-        
-        # Read all sheets from the Excel file
-        excel_data = pd.read_excel(excel_path, sheet_name=None)
-        
-        import numpy as np
-        def sanitize_for_json(obj):
-            if isinstance(obj, dict):
-                return {k: sanitize_for_json(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
-                return [sanitize_for_json(v) for v in obj]
-            elif isinstance(obj, (np.integer, np.floating)):
-                return obj.item() if not np.isnan(obj) else None
-            elif isinstance(obj, np.ndarray):
-                return sanitize_for_json(obj.tolist())
-            elif pd.isna(obj):
-                return None
-            return obj
-        
-        tables = {}
-        for sheet_name, df in excel_data.items():
-            tables[sheet_name] = sanitize_for_json(df.to_dict(orient='records'))
-        
-        return jsonify({
-            "message": "Master Excel loaded successfully",
-            "tables": tables
-        })
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/load-existing-master-excel', methods=['GET'])
-def load_existing_master_excel_route():
-    """Load the existing MASTER_AUDIT_DATA.xlsx from outputs directory."""
-    try:
-        import glob
-        excel_files = glob.glob(os.path.join(OUTPUT_DIR, "MASTER_AUDIT_DATA.xlsx"))
-        if not excel_files:
-            return jsonify({"error": "No MASTER_AUDIT_DATA.xlsx found in outputs"}), 404
-        
-        excel_path = excel_files[0]
-        excel_data = pd.read_excel(excel_path, sheet_name=None)
-        
-        import numpy as np
-        def sanitize_for_json(obj):
-            if isinstance(obj, dict):
-                return {k: sanitize_for_json(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
-                return [sanitize_for_json(v) for v in obj]
-            elif isinstance(obj, (np.integer, np.floating)):
-                return obj.item() if not np.isnan(obj) else None
-            elif isinstance(obj, np.ndarray):
-                return sanitize_for_json(obj.tolist())
-            elif pd.isna(obj):
-                return None
-            return obj
-        
-        tables = {}
-        for sheet_name, df in excel_data.items():
-            tables[sheet_name] = sanitize_for_json(df.to_dict(orient='records'))
-        
-        return jsonify({
-            "message": "Existing Master Excel loaded successfully",
-            "tables": tables
-        })
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
 if __name__ == '__main__':
-    app.run(debug=True, port=5050)
+    app.run(debug=True, port=5000)

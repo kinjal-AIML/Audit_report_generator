@@ -1,97 +1,74 @@
 # AI Concurrent Audit Intelligence Platform 🏦
 
-A production-grade, end-to-end automation platform designed for cooperative banks (like CNSB and MNSB). The system leverages AI and structured data extraction to automate concurrent audit data preparation, observation drafting, and standardized report generation.
+A production-grade, end-to-end automation platform designed for cooperative banks. The system leverages state-of-the-art AI, OCR, Layout Intelligence, and structured data extraction to automate concurrent audit data preparation, observation drafting, and standardized report generation—all **without using a database**.
 
 ---
 
 ## 🎯 Project Objective
 The platform reduces manual audit work by up to 90% and standardizes reporting through:
-- **Automated Data Extraction**: Multi-source ingestion from DOCX, PDF, and Excel.
-- **Annexure Preparation**: Instant generation of standardized audit annexures.
-- **Audit Intelligence**: AI-assisted drafting of observations and NPA summaries.
-- **Report Standardization**: Dynamic population of master templates while preserving pixel-perfect formatting.
-- **DOCX/PDF Generation**: Seamless conversion of audit reports to ready-to-sign formats.
+- **Databaseless Architecture**: Operates entirely in-memory, using filesystem storage, JSON Mapping, and Excel as the Master Control Panel.
+- **Advanced Automated Extraction**: Multi-source ingestion capturing tables, unstructured text, and multi-line semantic records spanning PDFs, Scans, and DOCX files.
+- **Relational Integrity**: Links Annexures, Observations, and Accounts seamlessly without SQL.
+- **Audit Intelligence**: AI-assisted drafting of observations and semantic anomaly reporting.
+- **Report Standardization**: Dynamic population of master Word templates while preserving strict banking layouts.
 
 ---
 
-## 🚀 Core System Workflow
+## 🚀 Core 17-Module System Architecture
 
-### STEP 1 — User Input
-Upload the current month's **CNSB/MNSB Master Template** along with supporting PDF reports:
-- Insurance Report
-- Loan Overdue Report
-- Encashment Report
-- NPA Report
-- Recovery Report
-- Stock Statement Report
+The platform has been strictly modularized into 17 high-performance engines:
 
-### STEP 2 — Data Extraction Engine
-Extracts structured data using a robust pipeline:
-- **Extraction Tools**: `pdfplumber`, `camelot-py`, `tabula-py`, `python-docx`.
-- **Key Data Points**: Account numbers, balances, overdue amounts, insurance expiry dates, NPA values, recovery amounts, and audit observations.
+### Extraction & Re-construction Engines (Modules 1-8)
+1. **PDF Intelligence Engine**: Detects digital vs scanned PDFs and preserves coordinates.
+2. **OCR Engine**: Utilizes `PaddleOCR` to salvage data from degraded or scanned bank documents.
+3. **Character-Level Word Reconstruction Engine**: Fixes core banking ERP issues like micro-gap kerning and disjointed characters dynamically.
+4. **Document Layout Intelligence**: Analyzes PDF streams to identify bounding boxes for sections and tables using `LayoutParser`.
+5. **Semantic Row Reconstruction Engine**: Groups fragmented visual rows spanning multiple horizontal ticks into one logical financial record.
+6. **Table Structure Recognition Engine**: Identifies rows, columns, and merged cells globally.
+7. **Coordinate Graph Mapping Engine**: Maintains a comprehensive geometric graph of every extracted block.
+8. **Template-Aware Extraction Engine**: Applies strictly defined banking heuristics on top of coordinate graphs for deterministic Overdue/Insurance extractions.
 
-### STEP 3 — Structured Master Excel (SOURCE OF TRUTH)
-The system generates a `MASTER_AUDIT_DATA.xlsx` which serves as the centralized data store.
-**Sheets Included:**
-1. **Audit Summary**
-2. **Insurance Report**
-3. **Loan Overdue**
-4. **Encashment Report**
-5. **NPA Accounts**
-6. **Recovery Accounts**
-7. **Audit Observations**
-8. **Annexures**
+### Storage & Relational Mapping Engines (Modules 9-10)
+9. **Excel Reconstruction Engine**: Generates `MASTER_AUDIT_DATA.xlsx`, containing universally appended relational keys: `Remarks`, `Annexure Ref`, `Observation ID`.
+10. **JSON Mapping Engine**: Resolves the lack of a database by dynamically associating observation IDs to specific anomaly sets across JSON files.
 
-*Note: All sheets include mandatory **Remarks** and **Annexure Reference** columns for audit compliance.*
+### Automation & Generation Engines (Modules 11-15)
+11. **AI Observation Engine**: Converts numerical and mapped anomalies into natural language legal observations without hallucinating financial figures.
+12. **Word Template Automation Engine**: Safely binds context variables into the DOCX placeholders.
+13. **Annexure Auto-Generation**: Prepares explicit audit annexures mapping to observations.
+14. **Date Intelligence Engine**: Controls strict temporal formatting and shift sequences across documents automatically.
+15. **DOCX/PDF Export Engine**: Converts final Word docs to secure, locked PDF files.
 
-### STEP 8 — Date Automation
-Input a single start date (e.g., `2026-02-01`), and the system automatically generates:
-- **Period Start**: `01-02-2026`
-- **Period End**: `28-02-2026` (Auto-calculates month-end)
-- **Cash Verification Date**: `13-03-2026` (+13 days)
-- **Report Date**: `16-03-2026` (+16 days)
-
-### STEP 9 — User Review Panel
-A professional interactive dashboard allows auditors to:
-- **Edit Extracted Fields**: Fine-tune branch names, balances, and dates.
-- **Modify Observations**: Update remarks and annexure references in real-time.
-- **Regenerate & Preview**: Instantly update the report structure before final export.
-
-### STEP 10 — Final Outputs
-- **MASTER_AUDIT_DATA.xlsx**: The complete audited dataset.
-- **CNSB Audit Report (DOCX)**: High-fidelity document preserving all original formatting.
-- **Final PDF Report**: Ready-for-signature digital report.
-- **Annexure Workbook**: Comprehensive audit annexures in Excel format.
-
----
-
-## 🛠️ Tech Stack
-- **Backend**: Python 3.10+, Flask 3.x
-- **Data Engineering**: Pandas, OpenPyXL
-- **Document Processing**: `docxtpl`, `python-docx`
-- **PDF Extraction**: `pdfplumber`, `camelot-py`
-- **Templating Engine**: Jinja2 (Web), DocxTemplate (Word)
-- **Frontend**: HTML5, CSS3, jQuery, Bootstrap 4 (AdminLTE 3 Integration)
+### Validation & Error Recovery Engines (Modules 16-17)
+16. **Validation Engine**: Performs cross-checks, checksums totals, and sweeps for duplicated account entities.
+17. **Error Recovery Engine**: Dispatches failover logic—when standard PyMuPDF layout fails on an ERP scan, PaddleOCR immediately spins up.
 
 ---
 
 ## 📂 Directory Structure
 ```text
 d:/audit_report_generator/
-├── app.py                # Main Flask entry point & API orchestration
-├── extractors/           # Extraction logic for PDF/DOCX formats
-│   ├── cnsb_extractor.py # CNSB template parsing
-│   ├── mnsb_extractor.py # MNSB template parsing
-│   └── pdf_extractor.py  # Structured table extraction from PDFs
-├── generators/           # Document & PDF generation engines
-│   └── report_generator.py
-├── utils/                # Utility & Automation modules
-│   ├── date_utils.py     # Step 8: Automatic date calculation logic
-│   ├── excel_generator.py # Step 3/10: Master Excel creation logic
-│   └── pdf_converter.py  # DOCX to PDF conversion utility
+├── main.py               # Main FastAPI Orchestration Entry Point
+├── extractors/           # Modules 1-8: Extraction and Reconstruction
+│   ├── pdf_intelligence.py
+│   ├── ocr_engine.py
+│   ├── char_reconstruction_engine.py
+│   ├── semantic_row_engine.py
+│   ├── layout_engine.py
+│   └── coordinate_mapper.py
+├── generators/           # Modules 9-13: Storage, AI, Generators
+│   ├── excel_reconstruction.py
+│   ├── json_mapping_engine.py
+│   ├── ai_observation_engine.py
+│   └── word_template_engine.py
+├── utils/                # Modules 14, 16, 17: Date, Recovery, Validation
+│   ├── date_intelligence.py
+│   ├── validation_recovery.py
+│   └── logger.py
 ├── templates/            # DOCX Master Templates & HTML views
-│   ├── UPDATED_CNSB_TEMPLATE.docx
-│   ├── index.html        # Step 9: User Review Panel & Dashboard
+├── uploads/              # Dynamic Filesystem ingestion
+├── extracted/            # JSON Maps and Excel Control panels
+├── exports/              # Final DOCX and PDFs
 └── requirements.txt      # Production dependencies
 ```
 
@@ -100,25 +77,28 @@ d:/audit_report_generator/
 ## ⚙️ Installation & Usage
 
 ### 1. Requirements
-Install the required packages:
+Install the required packages. Ensure you have Python 3.10+ installed.
 ```powershell
 pip install -r requirements.txt
 ```
+*Note: Depending on the OS, PaddleOCR and LayoutParser may require C++ build tools and Poppler.*
 
 ### 2. Run the Platform
+This project uses `FastAPI` and `uvicorn`.
 ```powershell
-python app.py
+uvicorn main:app --reload --port 5000
 ```
 Open `http://localhost:5000` in your browser.
 
-### 3. Report Templates
-Place your standardized bank templates in the `templates/` folder. Ensure they contain the following placeholders for replacement:
-`{{branch_name}}`, `{{period_start}}`, `{{period_end}}`, `{{cash_verification_date}}`, `{{report_date}}`, `{{closing_cash_balance}}`, `{{npa_summary}}`, `{{annexure_reference}}`, `{{audit_observation}}`.
+### 3. Workflow
+1. Upload your templates and underlying PDF data.
+2. Review the structured output locally in `MASTER_AUDIT_DATA.xlsx` or via the JSON mappings output to `extracted/json/`.
+3. Add remarks directly into the system, and endpoints will orchestrate DOCX template substitutions securely.
 
 ---
 
 ## 🛡️ Data Preservation Rules
-The system **ONLY** replaces dynamic placeholders. It strictly preserves:
+The system **ONLY** replaces dynamic placeholders ensuring zero disruption to official banking structures. It strictly preserves:
 - Headers & Footers
 - Fonts & Spacing
 - Tables & Margins

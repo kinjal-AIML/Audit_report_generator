@@ -1,5 +1,6 @@
-flask
-flask-cors
+fastapi
+uvicorn
+python-multipart
 python-docx
 docxtpl
 python-dateutil
@@ -17,3 +18,7 @@ Pillow
 pytesseract
 pdf2image
 pywin32
+layoutparser
+paddleocr
+paddlepaddle
+pymupdf
