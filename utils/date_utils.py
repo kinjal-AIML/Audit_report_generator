@@ -106,7 +106,8 @@ def generate_report_date(end_date_str):
 def build_template_context(
     branch_name,
     place,
-    start_date_input
+    start_date_input,
+    cash_verification_date=None
 ):
     """
     Main utility function
@@ -119,9 +120,13 @@ def build_template_context(
         start_date_input
     )
 
-    cash_verification_date = generate_cash_verification_date(
-        period_data["period_end"]
-    )
+    # Use provided cash verification date or generate from period end
+    if cash_verification_date:
+        verification_date = cash_verification_date
+    else:
+        verification_date = generate_cash_verification_date(
+            period_data["period_end"]
+        )
 
     report_date = generate_report_date(
         period_data["period_end"]
@@ -138,7 +143,7 @@ def build_template_context(
         "period_end": period_data["period_end"],
 
         # Auto Dates
-        "cash_verification_date": cash_verification_date,
+        "cash_verification_date": verification_date,
         "report_date": report_date,
     }
 

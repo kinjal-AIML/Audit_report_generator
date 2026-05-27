@@ -1,6 +1,6 @@
 from docx import Document
 import re
-
+from utils.number_to_words import number_to_indian_rupees
 
 def extract_mnsb_data(file_path):
 
@@ -25,5 +25,27 @@ def extract_mnsb_data(file_path):
     if period_match:
         data["period_start"] = period_match.group(1)
         data["period_end"] = period_match.group(2)
+
+    # Extract Closing Cash Balance from DOCX
+    cash_match = re.search(
+        r'Closing Cash Balance\s*:?\s*Rs\.?\s*([\d,]+(?:\.\d{2})?)',
+        full_text,
+        re.IGNORECASE
+    )
+
+    if cash_match:
+        balance_str = cash_match.group(1).replace(',', '')
+        data["closing_cash_balance"] = balance_str
+        data["closing_cash_balance_words"] = number_to_indian_rupees(balance_str)
+
+    # Extract Cash Verification Date
+    verification_match = re.search(
+        r'Cash Verification Date\s*:?\s*(\d{2}/\d{2}/\d{4})',
+        full_text,
+        re.IGNORECASE
+    )
+
+    if verification_match:
+        data["cash_verification_date"] = verification_match.group(1)
 
     return data
