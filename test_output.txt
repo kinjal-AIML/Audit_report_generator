@@ -1,0 +1,361 @@
+(venv) PS D:\audit_report_generator> python test.py
+{
+    "Cash / Postages /Adhesive Stamps": [
+        {
+            "sr_no": "",
+            "audit_review": "Verify opening / closing balance of Cash balances and whether same to tally with General Ledger?",
+            "auditor_comment": "Yes, We have verified Balance of cash balance stated as below and found that same are tallied with General Ledger.\n\nCash Verification Date 12/02/2026.\nClosing Cash Balance: Rs.10,02,738/-. Cash Balance in words: Ten Lakh Two Thousand Seven Hundred Thirty Eight Rupees Only.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether closing cash balance remains within cash retention limit fixed by H.O.?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Cash summary book printed, Signed & Filed on Daily basis?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Cash Discrepancy Register (Short /Excess) is kept and maintained up to date by the branch?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether surprise cash verification has been done by branch manager at regular interval?",
+            "auditor_comment": "Surprise cash verification has been done by branch manager at regular interval.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Surprise cash verification register is kept and maintained up to date by the branch?",
+            "auditor_comment": "No",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether cash movement register is kept and maintained up to date by the branch?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Verify opening / closing balance of Postal Stamp /Petty Cash balances and whether same to tally with the register?",
+            "auditor_comment": "There is no balance of postal stamp on hand on 31/01/2026 and hence we have no remarks to offer.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "To Verify opening /closing balance of Adhesive Stamp and whether same to tally with General Ledger?",
+            "auditor_comment": "There is no balance of Adhesive stamp on hand on 31/01/2026 and hence we have no remarks to offer.",
+            "branch_reply": ""
+        }
+    ],
+    "HOUSE KEEPING": [
+        {
+            "sr_no": "",
+            "audit_review": "Verified opening / closing balance of all kinds of deposits &advance at end of month and found the same to tally with General Ledger.",
+            "auditor_comment": "Yes, We have verified Closing Balance of all kinds of deposits & advances as at the end of month and found that the same are tallied with General Ledger.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Report long outstanding entries -More than 3 months.",
+            "auditor_comment": "There is no outstanding entry in any of the accounts as stated in table.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Report number of Draft Payables / Banker’s Cheques / pay orders pending for more than 3 months.",
+            "auditor_comment": "There are no outstanding entries older than 3 month at the end of the month hence we have no remarks to offer.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Report number of Entries of OBC/ IBC pending for more than 1 month.",
+            "auditor_comment": "There is no outstanding entry older than 1 month at the end of the month hence we have no remarks to offer.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether accounts with other banks have been reconciled by the branch at end of month?  (Furnish list of pending entries for more than three months.)",
+            "auditor_comment": "Not Applicable, as branch has no account with other bank.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether accounts with Head Office have been reconciled by the branch at end of month?  (Furnish list of pending entries for more than one month.)",
+            "auditor_comment": "Yes, No pending Entry.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Confirm that exceptional transaction reports are generated daily and reported copies signed by B.M. are properly maintained.",
+            "auditor_comment": "No, Exceptional transaction reports are not generated by branch. Branch is advice to print report on daily basis, review & signed by manager and keeps it in file.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether High Value transactions are authorized by manager/ officer ?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        }
+    ],
+    "DEPOSITS": [
+        {
+            "sr_no": "",
+            "audit_review": "Confirm that rates offered to depositors are as per H.O. circulars. (Report irregularities)",
+            "auditor_comment": "Yes, We have verified the rates offered to depositors on random basis and found the same are in order.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Confirm that rates offered to depositors at time of pre mature withdrawal of deposits are as per H.O. circulars. (Report irregularities)",
+            "auditor_comment": "Yes, We have verified the rates offered to depositors at time of pre mature withdrawal of deposits on random basis and found the same are in order.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Confirm that all the details are filled in account opening forms in nature of Saving Account, Current Account & Recurring Deposits account. K.Y.C. norms are followed by branch or not? Report irregularities, if any.",
+            "auditor_comment": "Yes, We have verified all account opening forms during month under audit and irregularities observed are resolved at time of audit by branch officer.",
+            "branch_reply": ""
+        }
+    ],
+    "Different Registers / Reports /Others": [
+        {
+            "sr_no": "",
+            "audit_review": "Whether muster register is maintained by branch?",
+            "auditor_comment": "Yes, Staff member mentions time of joining the duty and signs in muster. However at time of leaving the duty they do not mention the time of leaving.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Leave register is maintained and updated by branch on daily basis?",
+            "auditor_comment": "We found that when a staff member goes on leave, he/she gives leave report which is being filed. Record of all types of leave is being maintained in Attendance register.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Key register is properly maintained by branch ?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Cheque Book issue register is maintained by branch? Report the discrepancy, if any.",
+            "auditor_comment": "Yes,",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Furniture & dead stock register is maintained by branch? Whether balance of the register is tally with General Ledger?",
+            "auditor_comment": "Yes, Register is maintained by branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Investment register is maintained?",
+            "auditor_comment": "Not Applicable as transactions related to investment are carried out by Head Office.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Stock / Book Debt / Asset Inspection Register is maintained by branch?",
+            "auditor_comment": "Stock / Book Debt / Asset Inspection Register is maintained by branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has maintained meeting register of the staff?",
+            "auditor_comment": "Meeting register has been maintained by branch however no meeting is held during the month under audit.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has maintained meeting register of the Customers?",
+            "auditor_comment": "Meeting register has been maintained by branch however no meeting is held during the month under audit.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has maintained back up register for system data or not?",
+            "auditor_comment": "No, As informed to us back up is taken by Head Office.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has recover various charges as per H.O. Circular? (Like, Cheque Return Charges / Transaction charges / D.D. Commission etc.  Verify it on random basis.)",
+            "auditor_comment": "Yes, We have verified it on random basis and no discrepancy has been observed.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Verify day book vouchers of any day on sample basis with supplementary during month under audit.",
+            "auditor_comment": "We have verified day book vouchers of 08/01/2026 and   on sample basis and found the same are in order.",
+            "branch_reply": ""
+        }
+    ],
+    "LOANS &ADVANCES": [
+        {
+            "sr_no": "",
+            "audit_review": "Verify whether rate of interest and tenure are as per HO circulars / guidelines.",
+            "auditor_comment": "Yes, We have observed that rate of interest and tenure is as per terms of sanction.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Are the security / legal documents including mortgage deed complete in all respects including proper stamping and execution. (For all new/additional/renewals accounts during the month)",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Verify all the terms and conditions of sanction are fully complied with in loan cases disbursed during the month.",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give details of unrenewed accounts at end of month.",
+            "auditor_comment": "Nil",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give details about List of accounts where insurance policy is not obtained / renewed at end of month.",
+            "auditor_comment": "As per Annexure-1",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give details of Cash Credit accounts in which Stock / Book debt statement not received regularly.",
+            "auditor_comment": "Branch has not sanctioned any advances against the Stock / book debt hence we have no remarks to offer.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give details of accounts where drawn in excess of sanctioned limit / drawing power.",
+            "auditor_comment": "Nil",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Temporary Overdraft has sanctioned to any account?",
+            "auditor_comment": "No, As informed by the manager no overdraft has been sanctioned in the current account during month under audit.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Bills Purchase Register , bill Discount Register, Letter of Credit Register, Bank Guarantee register is maintained by branch and updated on daily basis ?",
+            "auditor_comment": "Not applicable, as no such facility is granted by branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give Details of Potential NPA Accounts at end of month.",
+            "auditor_comment": "As per Annexure-2",
+            "branch_reply": ""
+        }
+    ],
+    "SAFE DEPOSIT LOCKERS": [
+        {
+            "sr_no": "1.",
+            "audit_review": "Whether registers relating to locker operation is properly maintained.",
+            "auditor_comment": "Not Applicable, as locker facility is not available at branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "2.",
+            "audit_review": "Give Details of lockers issued and vacant at end of month.",
+            "auditor_comment": "Not Applicable, as locker facility is not available at branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "3.",
+            "audit_review": "Whether rent is collected and report about overdue rent at end of month.",
+            "auditor_comment": "Not Applicable, as locker facility is not available at branch.",
+            "branch_reply": ""
+        }
+    ],
+    "Comments on Security /General/ Miscellaneous Items": [
+        {
+            "sr_no": "",
+            "audit_review": "Whether Expenses incurred at branch are approved by delegated authority as per H.O. guidelines ?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether expenses incurred during the month are recorded properly as per it’s nature or not ?",
+            "auditor_comment": "Yes, We have verified expenses on random basis and found the same in order.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether insurance of assets at branch are adequate and in force ?",
+            "auditor_comment": "It is been informed to us that insurance of branch assets is taken by H.O",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has installed complain box in branch premises ? Give Details of Pending complains at end of month.",
+            "auditor_comment": "Yes, branch has installed complain box in branch premises. Complain register has been maintained by branch. No complain has been received during the month under audit.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether Staff members are wearing uniform and Identity Card at time of audit?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has installed CCTV camera, Alarm System/Siren and whether found in proper working condition?",
+            "auditor_comment": "Branch has not installed CCTV camera and found in working condition. Whereas, branch has not installed Alarm System/ Siren in the branch premises.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has installed Fire Extinguishers and are valid at the time of audit ?",
+            "auditor_comment": "Yes",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has appointed Security guard to safeguard the interest of branch?",
+            "auditor_comment": "No, Branch has advised to appoint security guard during the working timings of branch to safeguard the interest of the branch.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Whether branch has complied irregularities of last concurrent audit report ?",
+            "auditor_comment": "Branch has partially complied irregularities of earlier reports.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give Details about recovery in N.P.A. accounts by the branch during the end of quarter.",
+            "auditor_comment": "During the month under audit branch has recovered Nil Lakhs from N.P.A. borrowers. Branch is advised to strengthen the process of recovery to safeguard the interest of the bank.",
+            "branch_reply": ""
+        }
+    ],
+    "Quarterly Reporting": [
+        {
+            "sr_no": "",
+            "audit_review": "Confirm that whether security forms are under proper custody & registers are kept updated including security form on hand.  (Physically verify security forms like blank cheque books/ DD / Pay order Books / FDR / RTGS etc. & report only missing items)",
+            "auditor_comment": "Yes, We have verified security forms which are under proper custody & registers are found in order.",
+            "branch_reply": ""
+        },
+        {
+            "sr_no": "",
+            "audit_review": "Give details of Unit Inspection by auditor in cash credit account.",
+            "auditor_comment": "Not Applicable as inspection is to be carried out on quarterly basis.",
+            "branch_reply": ""
+        }
+    ]
+}

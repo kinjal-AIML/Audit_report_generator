@@ -1,0 +1,513 @@
+Act as a senior banking audit automation architect, AI document intelligence engineer, and enterprise workflow system designer.
+
+Build a production-grade AI Banking Concurrent Audit Automation Platform.
+
+The system must intelligently process:
+- banking audit DOCX templates
+- banking PDF reports
+- annexures
+- audit questionnaires
+- loan overdue reports
+- insurance pending reports
+- cash verification reports
+- trial balance reports
+- branch operational reports
+
+The platform must automatically:
+- classify documents
+- map reports to audit sections
+- extract structured financial data
+- generate annexures
+- render editable frontend audit workflows
+- regenerate final DOCX audit reports
+
+==================================================
+CORE OBJECTIVE
+==================================================
+
+Build an AI-powered banking audit workflow engine that:
+
+1. Uploads banking audit DOCX templates
+2. Extracts audit section headings dynamically
+3. Extracts audit questions dynamically
+4. Uploads multiple banking PDFs
+5. Detects which PDF belongs to which audit section
+6. Converts PDFs into structured JSON/Excel data
+7. Generates editable frontend audit workflow
+8. Auto-generates annexures
+9. Generates AI-assisted audit remarks
+10. Generates final DOCX audit report
+11. Preserves original DOCX formatting
+12. Supports unknown banking PDF formats dynamically
+
+==================================================
+SUPPORTED DOCUMENT TYPES
+==================================================
+
+Support:
+
+- DOCX banking audit templates
+- digitally generated banking PDFs
+- trial balance reports
+- loan overdue reports
+- insurance pending reports
+- stock statement reports
+- NPA reports
+- deposit reports
+- cash verification reports
+- operational audit reports
+
+==================================================
+DOCX TEMPLATE EXTRACTION
+==================================================
+
+When user uploads DOCX template:
+
+Example:
+MNSB Panchot January 26.docx
+
+Extract dynamically:
+
+AUDIT SECTIONS:
+- Cash / Postages /Adhesive Stamps
+- HOUSE KEEPING
+- DEPOSITS
+- Different Registers / Reports /Others
+- LOANS &ADVANCES
+- SAFE DEPOSIT LOCKERS
+- Comments on Security /General/ Miscellaneous Items
+- Quarterly Reporting
+- Annexure-1
+- Annexure-2
+
+==================================================
+SECTION EXTRACTION ENGINE
+==================================================
+
+Build intelligent section extraction engine.
+
+Detect sections using:
+- heading styles
+- bold text
+- uppercase patterns
+- centered alignment
+- table relationships
+- heading hierarchy
+
+Store sections as structured metadata.
+
+Example schema:
+
+{
+  "section_id": "",
+  "section_name": "",
+  "section_type": "",
+  "questions": []
+}
+
+==================================================
+QUESTION EXTRACTION ENGINE
+==================================================
+
+Extract audit questions dynamically from DOCX tables.
+
+Extract:
+- SR.NO
+- Audit Review Question
+- Auditor Remark
+- Reply of Branch
+- Annexure Reference
+
+Support:
+- multiline questions
+- merged table cells
+- nested tables
+- variable layouts
+
+Generate structured JSON.
+
+Example:
+
+{
+  "section_name": "Cash / Postages /Adhesive Stamps",
+  "questions": [
+    {
+      "sr_no": 1,
+      "question": "Verify opening / closing balance of Cash balances and whether same to tally with General Ledger?",
+      "remark": "",
+      "branch_reply": "",
+      "annexure_reference": ""
+    }
+  ]
+}
+
+==================================================
+PDF CLASSIFICATION ENGINE
+==================================================
+
+When user uploads PDFs:
+
+Automatically detect:
+- PDF type
+- report category
+- mapped audit section
+- related annexure
+
+Examples:
+
+Cash-related PDF
+→ Map to:
+Cash / Postages /Adhesive Stamps
+
+Insurance pending PDF
+→ Map to:
+LOANS &ADVANCES
+Annexure-1
+
+Loan overdue PDF
+→ Map to:
+LOANS &ADVANCES
+Annexure-2
+
+Trial Balance PDF
+→ Map to:
+HOUSE KEEPING
+
+Deposit report PDF
+→ Map to:
+DEPOSITS
+
+==================================================
+PDF DETECTION LOGIC
+==================================================
+
+Use hybrid intelligent classification.
+
+STAGE 1:
+Keyword detection
+
+STAGE 2:
+Semantic similarity
+
+STAGE 3:
+Header analysis
+
+STAGE 4:
+Table structure analysis
+
+STAGE 5:
+Layout pattern analysis
+
+==================================================
+SEMANTIC MAPPING ENGINE
+==================================================
+
+Use sentence-transformers embeddings.
+
+Recommended model:
+all-MiniLM-L6-v2
+
+Compute similarity between:
+- PDF extracted text
+- audit section metadata
+- annexure definitions
+
+Select highest-confidence mapping.
+
+==================================================
+CONFIDENCE SCORING
+==================================================
+
+Generate confidence scores.
+
+Example:
+
+{
+  "pdf_type": "loan_overdue",
+  "mapped_section": "LOANS &ADVANCES",
+  "mapped_annexure": "Annexure-2",
+  "confidence": 0.96
+}
+
+If confidence < threshold:
+- send to manual review queue
+
+==================================================
+PDF EXTRACTION ENGINE
+==================================================
+
+Support:
+- digitally generated text-based PDFs
+- monospaced banking reports
+- CBS-generated reports
+- Finacle-style reports
+- Oracle Reports exports
+- Crystal Reports exports
+
+Use:
+- pdfplumber
+- PyMuPDF
+- regex parsing
+- coordinate extraction
+
+==================================================
+PDF TO STRUCTURED DATA
+==================================================
+
+Convert PDFs into:
+- structured JSON
+- normalized DataFrames
+- optional Excel exports
+
+Support:
+- dynamic columns
+- multiline rows
+- variable spacing
+- wrapped descriptions
+- subtotal rows
+- grand totals
+
+==================================================
+DATA CLEANING ENGINE
+==================================================
+
+Automatically:
+- remove duplicate headers
+- remove subtotal rows
+- remove grand total rows
+- normalize amounts
+- normalize spaces
+- detect negative values
+- convert values into lakhs
+
+==================================================
+ANNEXURE GENERATION
+==================================================
+
+Generate:
+
+ANNEXURE-1:
+Insurance Pending Accounts
+
+ANNEXURE-2:
+Potential NPA / Overdue Accounts
+
+Generate:
+- typewise grouping
+- number of accounts
+- overdue totals
+- IR balances
+- outstanding balances
+- grand totals
+
+==================================================
+GROUPING ENGINE
+==================================================
+
+Group dynamically by:
+- Nature of Facility
+- Loan Type
+- Scheme Name
+
+Calculate:
+- account counts
+- overdue totals
+- IR balances
+- outstanding totals
+
+==================================================
+AUTO REMARK GENERATION
+==================================================
+
+Generate AI-assisted audit remarks.
+
+Examples:
+
+Cash verification successful:
+"Yes, We have verified the cash balance and found the same are tallied with General Ledger."
+
+Insurance pending accounts:
+"As per Annexure-1."
+
+Potential overdue/NPA accounts:
+"As per Annexure-2."
+
+Missing registers:
+"Register was not maintained properly during audit period."
+
+==================================================
+FRONTEND WORKFLOW ENGINE
+==================================================
+
+Frontend must support:
+
+STEP 1:
+Upload sample audit DOCX template
+
+STEP 2:
+Upload supporting PDF reports
+
+STEP 3:
+Automatic PDF classification
+
+STEP 4:
+Show mapped audit sections
+
+STEP 5:
+Show extracted structured data
+
+STEP 6:
+Render editable audit questions
+
+STEP 7:
+Allow user to:
+- edit remarks
+- edit branch replies
+- edit annexure references
+- approve annexure mappings
+
+==================================================
+FRONTEND UI REQUIREMENTS
+==================================================
+
+Frontend should show:
+
+SECTION ACCORDIONS:
+- Cash / Postages /Adhesive Stamps
+- HOUSE KEEPING
+- DEPOSITS
+- LOANS &ADVANCES
+etc.
+
+Inside each section:
+- audit questions
+- extracted findings
+- annexure references
+- editable remarks
+
+==================================================
+DOCX OUTPUT ENGINE
+==================================================
+
+Generate final DOCX audit report.
+
+Preserve:
+- original formatting
+- fonts
+- tables
+- alignment
+- borders
+- spacing
+- annexure formatting
+
+Support:
+- dynamic row insertion
+- table cloning
+- placeholder replacement
+
+==================================================
+VALIDATION ENGINE
+==================================================
+
+Validate:
+- missing mappings
+- invalid annexures
+- duplicate accounts
+- missing totals
+- inconsistent balances
+- invalid amounts
+
+Generate validation logs.
+
+==================================================
+TECH STACK
+==================================================
+
+Use:
+- Python
+- FastAPI
+- pandas
+- pdfplumber
+- PyMuPDF
+- python-docx
+- sentence-transformers
+- rapidfuzz
+- numpy
+- regex
+
+==================================================
+IMPORTANT ARCHITECTURE RULES
+==================================================
+
+Do NOT hardcode:
+- section names
+- PDF names
+- table indexes
+- annexure positions
+- report layouts
+- loan types
+
+Use:
+- adaptive parsing
+- intelligent classification
+- semantic mapping
+- dynamic grouping
+- reusable extraction pipelines
+
+==================================================
+FINAL OUTPUT REQUIREMENTS
+==================================================
+
+Generate:
+
+1. DOCX parser
+2. Heading extraction engine
+3. Question extraction engine
+4. PDF classifier
+5. Semantic mapping engine
+6. Structured JSON generator
+7. Annexure generator
+8. Dynamic frontend schema
+9. Validation engine
+10. Final DOCX generator
+11. Logging system
+12. Error handling pipeline
+13. Confidence scoring engine
+14. Audit workflow orchestration layer
+
+==================================================
+CODING REQUIREMENTS
+==================================================
+
+Code must be:
+- production-grade
+- scalable
+- modular
+- type-safe
+- extensible
+- banking-audit compliant
+
+Use:
+- pydantic models
+- clean architecture
+- dependency injection
+- reusable services
+- structured logging
+- async processing where required
+
+==================================================
+PRIMARY DESIGN PRINCIPLE
+==================================================
+
+The system must prioritize:
+
+1. Deterministic extraction
+2. Adaptive parsing
+3. Semantic classification
+4. Financial accuracy
+5. Audit traceability
+6. Human review workflow
+7. Production stability
+
+AI should assist the workflow,
+NOT replace accounting validation logic.

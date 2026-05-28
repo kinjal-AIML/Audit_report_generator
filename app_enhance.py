@@ -98,10 +98,14 @@ def parse_template_route():
 
 @app.route('/save-answers', methods=['POST'])
 def save_answers_route():
+    """
+    Save question answers temporarily in session (for stateless operation,
+    the frontend will re-send answers in /finalize-report).
+    """
     try:
-        # For large payloads, avoid cookie session bloat.
-        # Frontend will send answers again in /finalize-report.
-        return jsonify({"message": "Accepted"})
+        answers = request.json.get('answers', {})
+        session['answers'] = answers
+        return jsonify({"message": "Answers saved"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -110,180 +114,179 @@ def extract_data_route():
     try:
         if 'audit_file' not in request.files:
             return jsonify({"error": "No audit file uploaded"}), 400
-        
+
+        pdf_files = request.files.getlist('pdf_files') or []
         audit_file = request.files['audit_file']
-        start_date = request.form.get('start_date')
-        defer_pdfs = request.form.get('defer_pdfs', '1')  # '1' => skip PDFs now for faster response
-        
-        audit_path = os.path.join(UPLOAD_DIR, audit_file.filename)
+        start_date_str = request.form.get('start_date', '2026-02-01')
+
+        if not audit_file.filename.lower().endswith('.docx'):
+            return jsonify({"error": "Audit file must be DOCX"}), 400
+
+        # Save audit template
+        templates_dir = os.path.join('templates')
+        os.makedirs(templates_dir, exist_ok=True)
+        audit_path = os.path.join(templates_dir, 'USER_UPLOADED_TEMPLATE.docx')
         audit_file.save(audit_path)
-        # Also parse the uploaded template for sections/questions
-        try:
-            parsed_schema = parse_docx_template(audit_path)
-        except Exception:
-            parsed_schema = {"sections": []}
-        
-        pdf_files = request.files.getlist('pdf_files')
-        for f in pdf_files:
-            if f.filename:
-                f.save(os.path.join(UPLOAD_DIR, f.filename))
-        
-        file_mappings = get_file_mappings(pdf_files)
-        # store small mapping only; do not store tables in session
-        session['pdf_mappings'] = file_mappings
 
-        # Extract from audit DOCX
-        if "CNSB" in audit_file.filename.upper():
-            data = extract_cnsb_data(audit_path)
-            template_name = "UPDATED_CNSB_TEMPLATE.docx"
-        elif "MNSB" in audit_file.filename.upper():
-            data = extract_mnsb_data(audit_path)
-            template_name = "UPDATED_MNSB_TEMPLATE.docx"
-        else:
-            template_name = "UPDATED_CNSB_TEMPLATE.docx"
-            data = {}
+        # Parse template to get questions schema
+        schema = parse_docx_template(audit_path)
+        session['template_name'] = 'USER_UPLOADED_TEMPLATE.docx'
 
-        if not start_date:
-            start_date = "2026-02-01"
-        
-        # Extract cash verification date and closing balance from Cash report PDF
-        cash_verification_date = None
-        closing_cash_balance = None
-        closing_cash_balance_words = None
-        
-        for sheet_name, filename in file_mappings.items():
-            file_path = os.path.join(UPLOAD_DIR, filename)
-            if os.path.exists(file_path) and "cash" in sheet_name.lower():
-                cash_df = extract_cash_summary(file_path)
-                if not cash_df.empty:
-                    cash_verification_date = cash_df.attrs.get("report_date", "")
-                    closing_rows = cash_df[cash_df["Description"] == "Closing Cash Balance"]
-                    if not closing_rows.empty:
-                        closing_cash_balance = closing_rows.iloc[0]["Amount (INR)"]
-                        closing_cash_balance_words = number_to_indian_rupees(closing_cash_balance)
+        # Save PDFs
+        saved_pdfs = {}
+        for pdf in pdf_files:
+            if pdf and pdf.filename.lower().endswith('.pdf'):
+                pdf_path = os.path.join(UPLOAD_DIR, pdf.filename)
+                pdf.save(pdf_path)
+                saved_pdfs[pdf.filename] = pdf_path
 
-        date_context = build_template_context("Branch X", "Ahmedabad", start_date, cash_verification_date)
-        data.update(date_context)
-        
-        # Update with extracted cash values if available
-        if closing_cash_balance:
-            data["closing_cash_balance"] = closing_cash_balance
-            data["closing_cash_balance_words"] = closing_cash_balance_words
-
-        placeholders = {
-            "npa_summary": "NPA accounts review completed.",
-            "annexure_reference": "See Annexure A",
-            "audit_observation": "Observations recorded in master data sheet.",
-            "closing_cash_balance": data.get("closing_cash_balance", "0.00")
+        # Initialize master data with placeholders
+        master_data = {
+            'branch_name': '',
+            'branch_code': '',
+            'report_date': start_date_str,
+            'report_month': 'February 2026',
+            'auditor_name': '',
+            'auditor_id': '',
+            'audit_period': 'FY 2025-26'
         }
-        data.update(placeholders)
 
-        docx_excel_url = None
-        try:
-            docx_excel_path = generate_docx_like_excel(audit_path, OUTPUT_DIR)
-            docx_excel_url = f"/download/{os.path.basename(docx_excel_path)}"
-        except: pass
+        # Initialize tables structure
+        tables = {
+            'Cash report': [],
+            'NPA Accounts': [],
+            'Insurance Pending Register': [],
+            'Loan Overdue': [],
+            'Trial Balance': []
+        }
 
-        pdf_results = {}
-        if defer_pdfs not in ('1', 'true', 'yes'):
+        # Mark schema for later use
+        session['schema'] = schema
+
+        # Check if deferring PDFs
+        defer_pdfs = request.form.get('defer_pdfs') == '1'
+        if not defer_pdfs and saved_pdfs:
+            # Immediate processing (slower)
             try:
-                pdf_results = process_all_pdfs(UPLOAD_DIR, file_mappings)
-            except Exception as _e:
-                pdf_results = {}
-        
-        master_excel_file = request.files.get('master_excel_file')
-        if master_excel_file and master_excel_file.filename.endswith('.xlsx'):
-            master_excel_path = os.path.join(UPLOAD_DIR, master_excel_file.filename)
-            master_excel_file.save(master_excel_path)
-            try:
-                master_excel_data = pd.read_excel(master_excel_path, sheet_name=None)
-                for sheet_name, df in master_excel_data.items():
-                    pdf_results[sheet_name] = df
-            except: pass
-        
-        npa_df = pdf_results.get("NPA Accounts", pd.DataFrame())
-        if not npa_df.empty:
-            placeholders["npa_summary"] = f"A total of {len(npa_df)} NPA accounts were identified."
+                processed = process_all_pdfs(saved_pdfs)
+                for report_type, records in processed.items():
+                    tables[report_type] = sanitize_for_json(records)
+            except Exception:
+                pass  # PDFs are optional; continue without them
 
-        sanitized_tables = {k: sanitize_for_json(v.to_dict(orient='records')) for k, v in pdf_results.items()}
-        review_data = {"master_data": sanitize_for_json(data), "tables": sanitized_tables}
-        session['template_name'] = template_name
-        
         return jsonify({
-            "message": "Data extracted successfully",
-            "data": review_data,
-            "schema": parsed_schema,
-            "files": {"docx_excel": docx_excel_url} if docx_excel_url else {}
+            "message": "Data extracted",
+            "data": {
+                "master_data": master_data,
+                "tables": tables
+            },
+            "schema": schema,
+            "files": {}
         })
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/process-pdfs-now', methods=['POST'])
-def process_pdfs_now_route():
+def process_pdfs_now():
+    """Process all PDFs in uploads dir and return tables."""
     try:
-        file_mappings = session.get('pdf_mappings', {})
-        if not file_mappings:
-            # try reconstruct mappings from currently present files
-            existing = []
-            for fn in os.listdir(UPLOAD_DIR):
-                if fn.lower().endswith('.pdf'):
-                    class Dummy: pass
-                    d = Dummy(); d.filename = fn  # minimal interface for get_file_mappings
-                    existing.append(d)
-            file_mappings = get_file_mappings(existing)
+        pdf_files = {}
+        for fname in os.listdir(UPLOAD_DIR):
+            if fname.lower().endswith('.pdf'):
+                pdf_files[fname] = os.path.join(UPLOAD_DIR, fname)
 
-        pdf_results = process_all_pdfs(UPLOAD_DIR, file_mappings) if file_mappings else {}
-        sanitized_tables = {k: sanitize_for_json(v.to_dict(orient='records')) for k, v in pdf_results.items()}
-        return jsonify({"message": "PDFs processed", "tables": sanitized_tables})
+        tables = {}
+        if pdf_files:
+            processed = process_all_pdfs(pdf_files)
+            tables = {k: sanitize_for_json(v) for k, v in processed.items()}
+
+        return jsonify({"tables": tables})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/extract-excel-docx', methods=['POST'])
-def extract_excel_docx_route():
+def extract_excel_docx():
+    """Quick extract: DOCX template → Excel"""
     try:
-        if 'audit_file' not in request.files: return jsonify({"error": "No audit file"}), 400
+        if 'audit_file' not in request.files:
+            return jsonify({"error": "No DOCX file"}), 400
+
         audit_file = request.files['audit_file']
-        audit_path = os.path.join(UPLOAD_DIR, audit_file.filename)
+        templates_dir = 'templates'
+        os.makedirs(templates_dir, exist_ok=True)
+        audit_path = os.path.join(templates_dir, 'USER_UPLOADED_TEMPLATE.docx')
         audit_file.save(audit_path)
+
         excel_path = generate_docx_like_excel(audit_path, OUTPUT_DIR)
-        return jsonify({"message": "Generated successfully", "file": f"/download/{os.path.basename(excel_path)}"})
-    except Exception as e: return jsonify({"error": str(e)}), 500
+        return jsonify({"file": f"/download/{os.path.basename(excel_path)}"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/extract-excel-pdf', methods=['POST'])
-def extract_excel_pdf_route():
+def extract_excel_pdf():
+    """Quick extract: PDFs → Excel"""
     try:
-        pdf_files = request.files.getlist('pdf_files')
-        if not pdf_files: return jsonify({"error": "No PDF files"}), 400
-        for f in pdf_files:
-            if f.filename: f.save(os.path.join(UPLOAD_DIR, f.filename))
-        
-        file_mappings = get_file_mappings(pdf_files)
-        pdf_results = process_all_pdfs(UPLOAD_DIR, file_mappings)
-        excel_path = generate_master_excel(pdf_results, OUTPUT_DIR)
-        return jsonify({"message": "Generated successfully", "file": f"/download/{os.path.basename(excel_path)}"})
-    except Exception as e: return jsonify({"error": str(e)}), 500
+        pdf_files = {}
+        for fname in os.listdir(UPLOAD_DIR):
+            if fname.lower().endswith('.pdf'):
+                pdf_files[fname] = os.path.join(UPLOAD_DIR, fname)
+
+        if not pdf_files:
+            return jsonify({"error": "No PDFs to process"}), 400
+
+        processed = process_all_pdfs(pdf_files)
+        excel_path = generate_master_excel(
+            {k: pd.DataFrame(v) for k, v in processed.items()},
+            OUTPUT_DIR
+        )
+        return jsonify({"file": f"/download/{os.path.basename(excel_path)}"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download-excel-now', methods=['POST'])
-def download_excel_now_route():
+def download_excel_now():
+    """User clicks 'Download Excel Now' to export current edited state"""
     try:
-        payload = request.json or {}
-        table_data = payload.get('table_data') or {}
+        form_data = request.json
+        table_data = form_data.get('table_data', {})
         excel_data = {k: pd.DataFrame(v) for k, v in table_data.items()}
         excel_path = generate_master_excel(excel_data, OUTPUT_DIR)
-        return jsonify({"message": "Generated successfully", "file": f"/download/{os.path.basename(excel_path)}"})
-    except Exception as e: return jsonify({"error": str(e)}), 500
+        return jsonify({"file": f"/download/{os.path.basename(excel_path)}"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
+# =============================================================================
+# CRITICAL: /finalize-report endpoint with CORRECTED MERGE LOGIC
+# =============================================================================
 @app.route('/finalize-report', methods=['POST'])
 def finalize_report_route():
+    """
+    FIX SUMMARY:
+    1. Always overwrite q[field] with merged answer value
+    2. Add debug logging to verify merge happened
+    3. Add alias fields for template compatibility
+    4. Log first 2 questions before render to confirm
+    """
     try:
         form_data = request.json
         master_data = form_data.get('master_data')
         table_data = form_data.get('table_data')
         template_name = session.get('template_name', 'UPDATED_CNSB_TEMPLATE.docx')
-        # Answers are passed in payload to avoid session size issues
+        
+        # CRITICAL: Answers are passed in payload to avoid session size issues
         answers = form_data.get('answers', {})
+        
         # Optional parsed schema (sections/questions) from client
         schema = form_data.get('schema') or {}
+        
+        # === DEBUG LOG 1: Confirm answers received ===
+        print("\n" + "="*80)
+        print("DEBUG: /finalize-report - ANSWERS RECEIVED FROM FRONTEND")
+        print("="*80)
+        print(json.dumps(answers, indent=2)[:500])  # First 500 chars
+        print(f"Total answer keys: {len(answers)}")
+        print("="*80 + "\n")
         
         excel_data = {k: pd.DataFrame(v) for k, v in table_data.items()}
         excel_path = generate_master_excel(excel_data, OUTPUT_DIR)
@@ -384,33 +387,59 @@ def finalize_report_route():
         # Bind dynamic answers for template placeholders
         master_data['answers'] = answers
         
-        # Expose sections/questions for template loops if provided and
-        # merge any edited answers so they reflect in the final DOCX.
+        # === CRITICAL: Merge schema with answers ===
         if isinstance(schema, dict) and schema.get('sections'):
             sections = schema.get('sections') or []
+            
+            print("\n" + "="*80)
+            print("DEBUG: MERGING ANSWERS INTO SCHEMA")
+            print(f"Sections: {len(sections)}")
+            for si, sec in enumerate(sections):
+                print(f"  Section {si}: {sec.get('section_name')} - {len(sec.get('questions', []))} questions")
+            print("="*80 + "\n")
+            
             try:
                 # answers is expected in shape: { key: { remark, branch_reply, annexure_reference } }
-                for sec in sections:
-                    for q in (sec.get('questions') or []):
+                for sec_idx, sec in enumerate(sections):
+                    for q_idx, q in enumerate(sec.get('questions') or []):
                         # Prefer explicit key from parser; else derive a slug from text
                         key = q.get('key') or re.sub(r"[^A-Za-z0-9]+", "_", str(q.get('question') or '').strip()).strip('_').lower()
+                        
+                        # Get answers for this question
                         a = answers.get(key, {}) if isinstance(answers, dict) else {}
-                        # Only overwrite when a value is provided by user; otherwise keep template/defaults
-                        if a.get('remark') is not None:
+                        
+                        # === FIX: ALWAYS update with merged values (not just when non-null) ===
+                        # This ensures user edits are preserved
+                        if a:
                             q['remark'] = a.get('remark', '')
-                        if a.get('branch_reply') is not None:
                             q['branch_reply'] = a.get('branch_reply', '')
-                        if a.get('annexure_reference') is not None:
                             q['annexure_reference'] = a.get('annexure_reference', '')
-                        # Provide alias fields expected by some templates
+                        
+                        # === Provide alias fields for template compatibility ===
                         # Map: question -> audit_review, remark -> auditor_comment
-                        if 'audit_review' not in q:
-                            q['audit_review'] = q.get('question', '')
-                        if 'auditor_comment' not in q:
-                            q['auditor_comment'] = q.get('remark', '')
-            except Exception:
+                        q['audit_review'] = q.get('question', '')
+                        q['auditor_comment'] = q.get('remark', '')
+                        q['reply_of_branch'] = q.get('branch_reply', '')
+                        
+                        # Debug: log first 2 questions from first section
+                        if sec_idx == 0 and q_idx < 2:
+                            print(f"DEBUG: Question {key}")
+                            print(f"  - question: {q.get('question', '')[:60]}")
+                            print(f"  - auditor_comment: {q.get('auditor_comment', '')[:60]}")
+                            print(f"  - branch_reply: {q.get('branch_reply', '')[:60]}")
+                            print(f"  - annexure_reference: {q.get('annexure_reference', '')[:60]}")
+                
+                print("\n" + "="*80)
+                print("DEBUG: MERGE COMPLETE")
+                print("="*80 + "\n")
+                
+            except Exception as e:
+                print(f"ERROR during merge: {str(e)}")
+                import traceback
+                traceback.print_exc()
                 # Failsafe – don't block report generation if merging has an issue
                 pass
+            
             master_data['sections'] = sections
         
         # Dynamic Comments for main audit table
@@ -432,8 +461,17 @@ def finalize_report_route():
             final_template = "UPDATED_MNSB_TEMPLATE_DYNAMIC.docx"
         elif template_name == "UPDATED_MNSB_TEMPLATE.docx":
             final_template = "UPDATED_MNSB_TEMPLATE_DYNAMIC.docx"
-            
+        
+        print("\n" + "="*80)
+        print(f"DEBUG: RENDERING TEMPLATE: {final_template}")
+        print("="*80 + "\n")
+        
         output_docx = generate_report(template_name=final_template, context=master_data)
+        
+        print("\n" + "="*80)
+        print(f"DEBUG: DOCX GENERATED: {output_docx}")
+        print("="*80 + "\n")
+        
         return jsonify({
             "message": "Generated successfully",
             "files": {
@@ -443,34 +481,61 @@ def finalize_report_route():
                 "annexure": f"/download/{os.path.basename(annexure_path)}"
             }
         })
-    except Exception as e: return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        print(f"EXCEPTION in /finalize-report: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/load-master-excel', methods=['POST'])
 def load_master_excel_route():
     try:
-        excel_file = request.files.get('excel_file')
-        if not excel_file: return jsonify({"error": "No file"}), 400
-        excel_path = os.path.join(UPLOAD_DIR, excel_file.filename)
+        if 'excel_file' not in request.files:
+            return jsonify({"error": "No Excel file"}), 400
+        excel_file = request.files['excel_file']
+        excel_path = os.path.join(UPLOAD_DIR, 'MASTER_AUDIT_DATA.xlsx')
         excel_file.save(excel_path)
-        excel_data = pd.read_excel(excel_path, sheet_name=None)
-        tables = {s: sanitize_for_json(df.to_dict(orient='records')) for s, df in excel_data.items()}
-        return jsonify({"message": "Loaded successfully", "tables": tables})
-    except Exception as e: return jsonify({"error": str(e)}), 500
+
+        # Load tables from Excel into structured format
+        xls = pd.ExcelFile(excel_path)
+        tables = {}
+        for sheet in xls.sheet_names:
+            df = pd.read_excel(excel_path, sheet_name=sheet)
+            records = df.where(pd.notnull(df), None).values.tolist()
+            records_dicts = []
+            for row in records:
+                row_dict = {str(col): row[i] for i, col in enumerate(df.columns)}
+                records_dicts.append(row_dict)
+            tables[sheet] = records_dicts
+
+        return jsonify({"tables": sanitize_for_json(tables)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/load-existing-master-excel', methods=['GET'])
-def load_existing_master_excel_route():
+def load_existing_master_excel():
     try:
-        import glob
-        files = glob.glob(os.path.join(OUTPUT_DIR, "MASTER_AUDIT_DATA.xlsx"))
-        if not files: return jsonify({"error": "Not found"}), 404
-        excel_data = pd.read_excel(files[0], sheet_name=None)
-        tables = {s: sanitize_for_json(df.to_dict(orient='records')) for s, df in excel_data.items()}
-        return jsonify({"message": "Loaded successfully", "tables": tables})
-    except Exception as e: return jsonify({"error": str(e)}), 500
+        excel_path = os.path.join(OUTPUT_DIR, 'MASTER_AUDIT_DATA.xlsx')
+        if not os.path.exists(excel_path):
+            return jsonify({"error": "No MASTER_AUDIT_DATA.xlsx found"}), 404
+
+        xls = pd.ExcelFile(excel_path)
+        tables = {}
+        for sheet in xls.sheet_names:
+            df = pd.read_excel(excel_path, sheet_name=sheet)
+            records_dicts = []
+            for _, row in df.iterrows():
+                row_dict = {str(col): (None if pd.isna(val) else val) for col, val in row.items()}
+                records_dicts.append(row_dict)
+            tables[sheet] = records_dicts
+
+        return jsonify({"tables": sanitize_for_json(tables)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/download/<filename>')
-def download_report(filename):
-    return send_from_directory(OUTPUT_DIR, filename, as_attachment=True)
+def download(filename):
+    return send_from_directory(OUTPUT_DIR, filename)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5050)
+    app.run(debug=True, port=5050, host='0.0.0.0')

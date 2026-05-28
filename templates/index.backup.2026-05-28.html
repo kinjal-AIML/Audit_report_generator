@@ -419,13 +419,17 @@ $(document).ready(function () {
                 </li>
             `);
 
-            // Determine columns from data (hide Remarks/Annexure in UI)
+            // Ensure all records have Remarks and Annexure Ref columns
             const allColumns = new Set();
             records.forEach(row => {
                 Object.keys(row).forEach(col => allColumns.add(col));
             });
             
-            // Convert to array
+            // Ensure Remarks and Annexure Ref are always present
+            allColumns.add('Remarks');
+            allColumns.add('Annexure Ref');
+            
+            // Convert to array and sort - put key columns first, then Remarks/Annexure at end
             let columns = Array.from(allColumns);
             
             // Define preferred column order (key identifier columns come first)
@@ -439,9 +443,9 @@ $(document).ready(function () {
                 'Security Amt (INR)', 'Contact No.', 'Customer Id'
             ];
             
-            // Sort columns: preferred order first, then alphabetically (hide Remarks/Annexure)
-            const hiddenColumns = ['Remarks', 'Annexure Ref'];
-            const otherColumns = columns.filter(c => !hiddenColumns.includes(c));
+            // Sort columns: preferred order first, then alphabetically, then Remarks/Annexure at end
+            const remarksAnnexure = ['Remarks', 'Annexure Ref'];
+            const otherColumns = columns.filter(c => !remarksAnnexure.includes(c));
             
             // Sort other columns by preferred order
             otherColumns.sort((a, b) => {
@@ -453,8 +457,8 @@ $(document).ready(function () {
                 return a.localeCompare(b);
             });
             
-            // Final column order: sorted other columns only (Remarks/Annexure hidden)
-            columns = otherColumns;
+            // Final column order: sorted other columns + Remarks + Annexure Ref
+            columns = [...otherColumns, ...remarksAnnexure.filter(c => columns.includes(c))];
 
             let tableHtml = `<div class="tab-pane fade ${idx === 0 ? 'show active' : ''}" id="${tabId}" role="tabpanel">
                 <div class="table-responsive" style="max-height: 500px; overflow: auto;">
